@@ -21,6 +21,7 @@
         <module>twelvet-api-gen</module>
         <module>twelvet-api-auth</module>
         <module>twelvet-api-ai</module>
+        <module>twelvet-api-invoice</module>
     </modules>
 
     <dependencies>

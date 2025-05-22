@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.twelvet.server.invoice.mapper.InvoiceItemMapper">
+
+    <resultMap type="com.twelvet.server.invoice.domain.InvoiceItem" id="InvoiceItemResult">
+        <id     property="id"                  column="id" />
+        <result property="invoice.id"          column="invoice_id" /> <!-- If mapping parent Invoice object -->
+        <result property="itemName"            column="item_name" />
+        <result property="specificationModel"  column="specification_model" />
+        <result property="unit"                column="unit" />
+        <result property="quantity"            column="quantity" />
+        <result property="unitPrice"           column="unit_price" />
+        <result property="amountBeforeTax"     column="amount_before_tax" />
+        <result property="taxRate"             column="tax_rate" />
+        <result property="taxAmount"           column="tax_amount" />
+        <!-- BaseEntity fields -->
+        <result property="createBy"            column="create_by" />
+        <result property="createTime"          column="create_time" />
+        <result property="updateBy"            column="update_by" />
+        <result property="updateTime"          column="update_time" />
+        <result property="remark"              column="remark" />
+    </resultMap>
+
+    <select id="selectInvoiceItemsByInvoiceId" parameterType="Long" resultMap="InvoiceItemResult">
+        SELECT
+            id, invoice_id, item_name, specification_model, unit, quantity, unit_price,
+            amount_before_tax, tax_rate, tax_amount,
+            create_by, create_time, update_by, update_time, remark
+        FROM invoice_item
+        WHERE invoice_id = #{invoiceId}
+    </select>
+
+    <delete id="deleteInvoiceItemsByInvoiceId" parameterType="Long">
+        DELETE FROM invoice_item WHERE invoice_id = #{invoiceId}
+    </delete>
+
+    <!--
+       CommonMapper methods like insert, updateById, deleteById, selectById, selectList
+       are typically implemented using a combination of MyBatis interceptors and/or
+       possibly some base XML included by CommonMapper framework part, or by convention
+       they might expect specific <sql> fragments or resultMaps.
+       If CommonMapper doesn't auto-generate these, basic insert/update/delete/selectById
+       statements would be needed here. For now, assuming CommonMapper handles them.
+    -->
+
+</mapper>

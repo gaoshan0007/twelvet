@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.twelvet.server.invoice.mapper.InvoiceMapper">
+
+    <resultMap type="com.twelvet.server.invoice.domain.Invoice" id="InvoiceResult">
+        <id     property="id"                     column="id" />
+        <result property="invoiceCode"            column="invoice_code" />
+        <result property="invoiceNumber"          column="invoice_number" />
+        <result property="invoiceDate"            column="invoice_date" />
+        <result property="checkCode"              column="check_code" />
+        <result property="machineNumber"          column="machine_number" />
+        <result property="purchaserName"          column="purchaser_name" />
+        <result property="purchaserTin"           column="purchaser_tin" />
+        <result property="purchaserAddressPhone"  column="purchaser_address_phone" />
+        <result property="purchaserBankAccount"   column="purchaser_bank_account" />
+        <result property="sellerName"             column="seller_name" />
+        <result property="sellerTin"              column="seller_tin" />
+        <result property="sellerAddressPhone"     column="seller_address_phone" />
+        <result property="sellerBankAccount"      column="seller_bank_account" />
+        <result property="totalAmount"            column="total_amount" />
+        <result property="totalTax"               column="total_tax" />
+        <result property="totalPriceAndTaxInWords" column="total_price_and_tax_in_words" />
+        <result property="totalPriceAndTaxInFigures" column="total_price_and_tax_in_figures" />
+        <result property="payee"                  column="payee" />
+        <result property="reviewer"               column="reviewer" />
+        <result property="issuer"                 column="issuer" />
+        <!-- BaseEntity fields -->
+        <result property="createBy"               column="create_by" />
+        <result property="createTime"             column="create_time" />
+        <result property="updateBy"               column="update_by" />
+        <result property="updateTime"             column="update_time" />
+        <result property="remark"                 column="remark" />
+        <!-- Collection for InvoiceItems -->
+        <collection property="items" ofType="com.twelvet.server.invoice.domain.InvoiceItem" resultMap="com.twelvet.server.invoice.mapper.InvoiceItemMapper.InvoiceItemResult">
+            <!-- This assumes InvoiceItemMapper.xml will define "InvoiceItemResult" -->
+            <!-- To make this self-contained for now, or if items are always fetched with invoice: -->
+            <!-- <id     property="id"       column="item_id" /> -->
+            <!-- <result property="itemName" column="item_name" /> -->
+            <!-- ... other item fields, ensure columns have aliases if names clash ... -->
+        </collection>
+    </resultMap>
+
+    <!--
+        The selectInvoiceByInvoiceNumber query needs a join to fetch invoice items.
+        The column names for items in the join should be prefixed (e.g., item_id, item_name)
+        to avoid ambiguity if Invoice and InvoiceItem tables have columns with the same names (like 'id', 'remark', 'create_time').
+        Then, the resultMap for the collection would map these aliased columns.
+    -->
+    <select id="selectInvoiceByInvoiceNumber" parameterType="String" resultMap="InvoiceResult">
+        SELECT
+            i.id, i.invoice_code, i.invoice_number, i.invoice_date, i.check_code, i.machine_number,
+            i.purchaser_name, i.purchaser_tin, i.purchaser_address_phone, i.purchaser_bank_account,
+            i.seller_name, i.seller_tin, i.seller_address_phone, i.seller_bank_account,
+            i.total_amount, i.total_tax, i.total_price_and_tax_in_words, i.total_price_and_tax_in_figures,
+            i.payee, i.reviewer, i.issuer,
+            i.create_by, i.create_time, i.update_by, i.update_time, i.remark,
+            item.id as item_id, item.item_name as item_item_name, item.specification_model as item_specification_model,
+            item.unit as item_unit, item.quantity as item_quantity, item.unit_price as item_unit_price,
+            item.amount_before_tax as item_amount_before_tax, item.tax_rate as item_tax_rate, item.tax_amount as item_tax_amount,
+            item.create_by as item_create_by, item.create_time as item_create_time,
+            item.update_by as item_update_by, item.update_time as item_update_time,
+            item.remark as item_remark
+        FROM invoice i
+        LEFT JOIN invoice_item item ON i.id = item.invoice_id
+        WHERE i.invoice_number = #{invoiceNumber}
+    </select>
+
+    <!--
+       CommonMapper methods like insert, updateById, deleteById, selectById, selectList
+       are typically implemented using a combination of MyBatis interceptors and/or
+       possibly some base XML included by CommonMapper framework part, or by convention
+       they might expect specific <sql> fragments or resultMaps.
+       If CommonMapper doesn't auto-generate these, basic insert/update/delete/selectById
+       statements would be needed here. For now, assuming CommonMapper handles them.
+    -->
+
+</mapper>

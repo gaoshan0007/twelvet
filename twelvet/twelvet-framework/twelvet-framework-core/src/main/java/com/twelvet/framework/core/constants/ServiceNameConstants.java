@@ -27,4 +27,9 @@ public interface ServiceNameConstants {
 	 */
 	String AI_SERVICE = "twelvet-server-ai";
 
+	/**
+	 * 发票服务的serviceId
+	 */
+	String INVOICE_SERVICE = "twelvet-server-invoice"; // Ensure this matches the actual service name used for discovery
+
 }
